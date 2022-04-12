@@ -12,22 +12,32 @@ import (
 
 var (
 	helpFlag *bool
-	helpMSG  = `Usage: %s <IP_CIDRs> <IP>
+	helpHelp = "print help"
+
+	quietFlag *bool
+	quietHelp = "quiet; do not write anything to standard output"
+
+	helpMSG = `Usage: %s <IP_CIDRs> <IP>
 
 The first CIDR in list that containes given IP is returned with an exit code of 0
 If there is no match, exit code 1 is returnned
 If there is an error, exit code 2 is returned
 
-Arguments:
+Positional Arguments (Required):
 - IP_CIDRs is a comma delineated list of CIDRs, eg. 100.0.0.0/16,192.168.1.1/16
 - IP is the address to search the the CIDRs for
+
+Flag Arguments (Optional):
+-h %s
+-q %s
 `
 )
 
 func init() {
 	filename := filepath.Base(os.Args[0])
-	helpMSG = fmt.Sprintf(helpMSG, filename)
-	helpFlag = flag.Bool("h", false, "print help")
+	helpMSG = fmt.Sprintf(helpMSG, filename, helpHelp, quietHelp)
+	helpFlag = flag.Bool("h", false, helpHelp)
+	quietFlag = flag.Bool("q", false, quietHelp)
 }
 
 func main() {
@@ -54,7 +64,9 @@ func main() {
 		}
 
 		if ipNet.Contains(ip) {
-			fmt.Println(ipNet.String())
+			if !*quietFlag {
+				fmt.Println(ipNet.String())
+			}
 			os.Exit(0)
 		}
 	}
