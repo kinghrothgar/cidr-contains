@@ -57,6 +57,10 @@ func main() {
 		os.Exit(2)
 	}
 	for _, ipCIDR := range strings.Split(flag.Arg(0), ",") {
+		// This is mostly to handle a trailing comma in the list
+		if ipCIDR == "" {
+			continue
+		}
 		_, ipNet, err := net.ParseCIDR(ipCIDR)
 		if err != nil {
 			l.Printf("ERROR: %s is not a valid CIDR\n", ipCIDR)
